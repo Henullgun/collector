@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <script>
+        var cookie = document.cookie;
+        if (cookie == "") {
+            var randomID = Math.random().toString(36).substr(2, 10)
+
+            var date = new Date();
+            date.setDate(date.getDate() + 3);
+
+            cookie += "UserID=" + randomID + ";";
+            cookie += "expires=" + date.toUTCString() + ";";
+            document.cookie = cookie;
+        }
+        console.log(document.cookie);
+    </script>
+    
+    
+
+</head>
+
+<body>
+    <script src="/__/firebase/7.17.1/firebase-app.js"></script>
+    <script src="/__/firebase/7.17.1/firebase-analytics.js"></script>
+    <script src="/__/firebase/7.16.1/firebase-auth.js"></script> <!-- 인증 sdk-->
+    <script src="/__/firebase/7.16.1/firebase-firestore.js"></script> <!-- firestore sdk-->
+    <script src="/__/firebase/7.17.1/firebase-database.js"></script> <!-- realtime database sdk-->
+    <script src="/__/firebase/init.js"></script>
+    
+    <script> var database = firebase.database();</script>
+
+    <script>
+        function dataSender() {
+            var sendData = document.getElementById("URLText").value;
+            database.ref('users/' + getCookie("UserID") + '/client').set({
+                url: sendData,
+            });
+            console.log("send");
+        }
+    </script>
+    
+    
+    <script>
+        function getCookie(name) {
+            var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+            return value ? value[2] : null;
+        }
+    </script>
+
+
+    
+    <div style="margin-left: 100px">
+        <h1><script> document.write("User ID : "+getCookie("UserID")); </script></h1>
+    </div>
+    
+    <div style="margin-left: 100px; font-size: 30px">
+        <form>
+            <span>URL :&nbsp</span>
+            <input id=URLText style="font-size: 30px" type="text" required>
+            <input style="font-size: 25px" type="submit" onclick="dataSender()">
+        </form>
+    </div>
+    
+    <div style="margin-top: 50px; margin-left: 100px">
+        <h1>Server Data</h1>
+        <div>
+            <div id='serverPrint'>
+                <script>
+                    var serverData;
+                    database.ref('users/' + getCookie("UserID") + "/server/").once('value', function(data) {
+                        console.log(data.val());
+                        serverData = data.val();
+                        serverPrint.append(serverData['serverdata1']);
+                        serverPrint.append("\n");
+                        serverPrint.append(serverData['serverdata2']);
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+
+
+
+</html>
